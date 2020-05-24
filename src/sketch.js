@@ -64,7 +64,7 @@ function setup() {
 function mouseDragged(event) {
     let newXY = createVector(event['clientX'], event['clientY']);   
     mouseVel = p5.Vector.sub(newXY, lastXY);
-    mouseVel.limit(50);
+    mouseVel.limit(2.5);
     cubeNewPos.add(mouseVel);
     cubeNewPos.limit(1500);
     // console.log(cubeNewPos);
@@ -99,10 +99,10 @@ class SoundKreis {
 
     distFromCanvasCenter (centerPos) {
         let dist = abs(p5.Vector.sub(this.pos, centerPos).mag());
-        let clipped = clip(dist, 0, 400);
-        let newColor = map(clipped, 0, 400, 0, 255);
+        let clipped = clip(dist, 0, 550);
+        let newColor = map(clipped, 0, 550, 0, 255);
         this.color = [255,0,0, 255 - clip(newColor,0,255)];
-        this.volume = 1 - map(clipped, 0, 400, 0, 1);
+        this.volume = 1 - map(clipped, 0, 550, 0, 1);
         // console.log(dist, this.pos, centerPos);
         if(this.volume > 0){
             if(this.lastVolume == 0){
