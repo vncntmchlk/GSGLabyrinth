@@ -61,7 +61,17 @@ function setup() {
     // mouseVel = createVector(0,0);
 }
 
-function mouseDragged(event) {
+// function mouseDragged(event) {
+//     let newXY = createVector(event['clientX'], event['clientY']);   
+//     mouseVel = p5.Vector.sub(newXY, lastXY);
+//     mouseVel.limit(2.5);
+//     cubeNewPos.add(mouseVel);
+//     cubeNewPos.limit(1500);
+//     // console.log(cubeNewPos);
+//     lastXY = newXY;
+// }
+
+function touchMoved(event) {
     let newXY = createVector(event['clientX'], event['clientY']);   
     mouseVel = p5.Vector.sub(newXY, lastXY);
     mouseVel.limit(2.5);
