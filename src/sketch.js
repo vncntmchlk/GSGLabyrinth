@@ -40,6 +40,9 @@ let widthIndex = 88888;
 let maxMagVal;
 let lastVolumes;
 let loadText;
+let speedX = 0;
+let speedY = 0;
+let drift;
 // let allLoaded = [0,0,0,0,0,0,0,0,0];
 
 function preload() { // alle samples laden
@@ -75,6 +78,24 @@ function preload() { // alle samples laden
 function setup() {
     loadText.hide();
     createCanvas(windowWidth * 0.95, windowHeight * 0.95);
+
+    if (Controller && Controller.supported) {
+        Controller.search();
+      
+        window.addEventListener('gc.button.hold', function(event) {
+            var stick = event.detail;
+            //console.log(stick.name, stick.value);
+            if (stick.name == 'MISCAXIS_1') { 
+                speedX = stick.value
+            };
+            if (stick.name == 'MISCAXIS_2') { 
+                speedY = stick.value
+            };
+            }, false);
+    };
+        
+
+
     cubeNewPos = createVector(0,0);
     centerVector = createVector(width/2, height/2);
     mitte = createVector(width/2 * 0.85, height/2 * 0.85);
@@ -114,57 +135,84 @@ function setup() {
         (newImg = img.get()).mask(newMask);
         maskedImages.push(newImg);
     });
+    drift = createVector(5, 5);
+    joyStickMoved()
     // console.log(timeLast)
 }
 
+function joyStickMoved() {
+    let newXY = createVector(speedX, speedY).mult(25);   
+    //mouseVel = p5.Vector.sub(newXY, lastXY);
+    //mouseVel.limit(15); //2.5 //15
+    cubeNewPos.add(drift);
+    cubeNewPos.sub(newXY);
 
-
-function touchMoved() {
-    let timeNow = Date.now();
-        if (timeNow - timeLast > 20){
-        let newXY = createVector(mouseX, mouseY);   
-        mouseVel = p5.Vector.sub(newXY, lastXY);
-        mouseVel.limit(15); //2.5 //15
-        cubeNewPos.add(mouseVel);
-        // cubeNewPos.limit(1500);
-        // if (abs(cubeNewPos.y) > height/2) {
-        //     if(cubeNewPos.y > 0){
-        //         heightIndex++;
-        //     } else {
-        //         heightIndex--;
-        //     }
-        //     cubeNewPos.y = cubeNewPos.y % (height/2);
-        // }
-        // if (abs(cubeNewPos.x) > width/2) {
-        //     if(cubeNewPos.x > 0){
-        //         widthIndex++;
-        //     } else {
-        //         widthIndex--;
-        //     }
-        //     cubeNewPos.x = cubeNewPos.x % (width/2);
-        // }
-        if (abs(cubeNewPos.y) > height/2) {
-            if(cubeNewPos.y > 0){
-                heightIndex++;
-            } else {
-                heightIndex--;
-            }
-            cubeNewPos.y = cubeNewPos.y % (height/2);
+    if (abs(cubeNewPos.y) > height/2) {
+        if(cubeNewPos.y > 0){
+            heightIndex++;
+        } else {
+            heightIndex--;
         }
-        if (abs(cubeNewPos.x) > width/2) {
-            if(cubeNewPos.x > 0){
-                widthIndex++;
-            } else {
-                widthIndex--;
-            }
-            cubeNewPos.x = cubeNewPos.x % (width/2);
-        }
-        // console.log(cubeNewPos);
-        lastXY = newXY;
-        redraw();
-        timeLast = Date.now();
+        cubeNewPos.y = cubeNewPos.y % (height/2);
     }
+    if (abs(cubeNewPos.x) > width/2) {
+        if(cubeNewPos.x > 0){
+            widthIndex++;
+        } else {
+            widthIndex--;
+        }
+        cubeNewPos.x = cubeNewPos.x % (width/2);
+    };
+    redraw();
+    setTimeout(joyStickMoved, 50);
 }
+
+// function touchMoved() {
+//     let timeNow = Date.now();
+//         if (timeNow - timeLast > 20){
+//         let newXY = createVector(mouseX, mouseY);   
+//         mouseVel = p5.Vector.sub(newXY, lastXY);
+//         mouseVel.limit(15); //2.5 //15
+//         cubeNewPos.add(mouseVel);
+//         // cubeNewPos.limit(1500);
+//         // if (abs(cubeNewPos.y) > height/2) {
+//         //     if(cubeNewPos.y > 0){
+//         //         heightIndex++;
+//         //     } else {
+//         //         heightIndex--;
+//         //     }
+//         //     cubeNewPos.y = cubeNewPos.y % (height/2);
+//         // }
+//         // if (abs(cubeNewPos.x) > width/2) {
+//         //     if(cubeNewPos.x > 0){
+//         //         widthIndex++;
+//         //     } else {
+//         //         widthIndex--;
+//         //     }
+//         //     cubeNewPos.x = cubeNewPos.x % (width/2);
+//         // }
+//         if (abs(cubeNewPos.y) > height/2) {
+//             if(cubeNewPos.y > 0){
+//                 heightIndex++;
+//             } else {
+//                 heightIndex--;
+//             }
+//             cubeNewPos.y = cubeNewPos.y % (height/2);
+//         }
+//         if (abs(cubeNewPos.x) > width/2) {
+//             if(cubeNewPos.x > 0){
+//                 widthIndex++;
+//             } else {
+//                 widthIndex--;
+//             }
+//             cubeNewPos.x = cubeNewPos.x % (width/2);
+//         }
+//         // console.log(cubeNewPos);
+//         lastXY = newXY;
+//         redraw();
+//         timeLast = Date.now();
+//     }
+// }
 
 function makeMask (sizeW, sizeH) {
     let maskImg = createGraphics(sizeW, sizeH);
